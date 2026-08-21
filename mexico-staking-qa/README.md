@@ -33,7 +33,8 @@ dev-кошелька команды или скрипт минта); токен 
 | `csv/mexico_smoke_fast.csv` | 25 кейсов. Линейный прогон одним кошельком от установки минимального лока до анстейка — рассчитан на один вечер. |
 | `csv/mexico_break_it_tonight.csv` | 28 кейсов. Обход авторизации, IDOR, race conditions, обход клиентской валидации — всё через DevTools + Phantom, без Anchor/CLI. |
 | `csv/mexico_solana_specific.csv` | 24 кейса. Специфика сети: rent, ATA, compute budget при множестве позиций, подмена PDA-аккаунтов, on-chain Clock против системных часов, replay транзакций, порог подписей мультисига. |
-| `Mexico_Staking_QA_Master.xlsx` | Все три чек-листа сведены в один файл: по вкладке на чек-лист + сводная вкладка `Summary`, во всех вкладках добавлены колонки `Status` и `Priority`. |
+| `csv/mexico_unstake_deep_dive.csv` | 37 кейсов. Отдельный глубокий чек-лист именно по unstake: happy path, границы лока, IDOR/подмена аккаунтов, race conditions, атомарность/rent/compute budget, поведение при паузе мультисигом, взаимодействие с наградами (pending rewards, тир-прогрессия), UI/UX. Дополняет (не заменяет) unstake-кейсы, уже присутствующие в трёх чек-листах выше. |
+| `Mexico_Staking_QA_Master.xlsx` | Все чек-листы сведены в один файл: по вкладке на чек-лист + сводная вкладка `Summary`, во всех вкладках добавлены колонки `Status` и `Priority`. |
 | `scripts/build_master_workbook.py` | Скрипт, который собирает `Mexico_Staking_QA_Master.xlsx` из CSV-файлов. Запуск: `python3 scripts/build_master_workbook.py`. |
 | `bug_reports/BUG-001-helius-api-key-exposed.md` | Формальный баг-репорт: Helius API-ключ уходит в открытом виде в query-параметре RPC-запросов с фронта. |
 | `bug_reports/BUG-002-claim-rounding-dust.md` | Формальный баг-репорт: проверка округления на дробных claim'ах (`+0.001`, `+0.005`) — риск переплаты или потери начислений на округлении до нуля. |
@@ -80,3 +81,7 @@ dev-кошелька команды или скрипт минта); токен 
       реконструированных здесь) в `Mexico_Staking_QA_Master.xlsx`.
 - [ ] Прогнать `BUG-001` и `BUG-002` до конца и приложить пруфы (HAR-файлы /
       скриншоты Network tab, транзакции on-chain) к репортам.
+- [ ] Прогнать `csv/mexico_unstake_deep_dive.csv` целиком (вкладка `Unstake
+      Deep Dive` в мастер-файле) — это следующий приоритетный блок после
+      smoke-прохода, так как unstake — точка вывода средств, где пересекаются
+      lock-логика, rent, автокомпаунд и потенциальный IDOR.
