@@ -1,0 +1,26 @@
+Title;How to test;Expected Result
+Connect Phantom wallet on devnet;Open mexicoweb-dev.up.railway.app, click "Connect Wallet", select Phantom, approve connection;Wallet connects successfully, address and SOL balance are shown in the header
+Switch Phantom network to Devnet;In Phantom settings, switch active network to Devnet, reload the app;App detects Devnet and loads pool/position data without errors
+Fund wallet with devnet SOL;Use faucet.solana.com (or `solana airdrop`) to send devnet SOL to the connected wallet;Wallet balance increases by the requested SOL amount within a few seconds
+Obtain devnet MEX tokens;Request a transfer from the team dev-wallet (or run the provided mint script) to the test wallet;Test wallet receives the requested amount of MEX on devnet
+Add MEX token to Phantom;In Phantom token list enable the hidden-token toggle for MEX, or add manually by mint address;MEX balance and logo/ticker are visible in Phantom's asset list
+Verify pool stats on Stake page load;Open the Stake page with a wallet connected;Global cap, currently staked amount, pool occupancy indicator and APR range are displayed and internally consistent (occupied <= cap)
+Create first staking position at minimum amount;Enter the minimum allowed stake amount and minimum lock tier, submit the stake transaction, approve in Phantom;Transaction confirms, a new position appears in "My Positions" with correct amount and lock end date
+Verify ATA/position account creation on first stake;After the first stake, inspect the transaction on a devnet explorer;Instruction creates the position PDA and (if needed) the associated token account for MEX; rent is paid from the staker's wallet
+Verify position details match input;Open the new position card in the UI;Displayed staked amount, lock duration and start date match what was submitted
+Perform Day 1 daily check-in;On the position, click "Check-in" for the first time;Check-in succeeds, streak counter shows 1, and the current rate reflects the primary-tier starting value
+Verify check-in cannot be repeated same day;Click "Check-in" again immediately after a successful check-in;Action is blocked (button disabled or on-chain rejection) with a clear "already checked in today" message
+Attempt to unstake before lock period ends;On a position still inside its lock window, click "Unstake";Action is blocked by the UI and/or rejected on-chain; funds remain staked
+Claim rewards while position is still locked;If claim is allowed mid-lock, click "Claim" on the locked position;Claimed amount matches the rewards accrued so far according to the displayed rate/formula; wallet MEX balance increases accordingly
+Verify claim history entry is recorded;After claiming, open transaction/claim history;A new entry with the correct amount and timestamp appears in the history list
+Compound rewards into the existing position;Click "Compound" on a position with pending rewards;Position's staked amount increases by the compounded reward amount; pending rewards reset to zero
+Verify pool occupancy indicator updates after stake/compound;Reload the Stake page after compounding;Pool occupancy percentage reflects the new total staked amount
+Wait for the minimum lock period to elapse;Using the minimum lock tier, wait (or fast-forward on a local validator) until the lock end timestamp passes;Position status changes from "Locked" to "Unlocked"/"Claimable" in the UI
+Verify unlocked position allows unstake;Open a position after its lock has elapsed and click "Unstake";Unstake transaction is accepted and no longer blocked by the lock check
+Unstake the full position after unlock;Submit a full unstake for the unlocked position, approve in Phantom;Transaction confirms; principal (and any un-claimed rewards per the design) is returned to the wallet
+Verify auto-compound-at-unlock behavior;Let pending rewards accumulate on a position, then let it reach unlock without manually compounding;At unlock, rewards are automatically compounded/settled per design before/at the unstake step, matching the documented behavior
+Verify position is closed/removed after full unstake;After a successful full unstake, refresh "My Positions";The position no longer appears in the active positions list (or is marked closed) and its account is closed on-chain
+Verify final wallet balance reconciles;Compare pre-stake and post-unstake MEX balances against principal + net rewards;Final balance equals principal plus all claimed/compounded rewards minus nothing unaccounted for (no unexplained loss)
+Create a second independent position while the first exists;With one active/closed position already present, create another stake with different amount/tier;Both positions are tracked independently with their own lock timers and balances
+Verify no artificial limit on number of positions per wallet;Create three or more simultaneous positions from the same wallet;All positions are created successfully with no "max positions" error, consistent with "independent positions without a count limit"
+Verify indexer/API reflects final on-chain state;Query the read-only API for the test wallet after the smoke run completes;API response matches on-chain state (positions, balances, streaks) with no stale or missing data
